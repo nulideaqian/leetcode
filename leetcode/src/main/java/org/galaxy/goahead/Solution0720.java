@@ -1,19 +1,44 @@
 package org.galaxy.goahead;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * @author Galaxy
- * @since 2022/4/13 0:50
+ * @since 2022/4/23 0:48
  */
-public class Solution0208 {
+public class Solution0720 {
 
-  public static void main(String[] args) {
+  public String longestWord(String[] words) {
+    List<String> sortWords = Arrays.stream(words).sorted(Comparator.comparingInt(String::length))
+        .toList();
+    String result = "";
     Trie trie = new Trie();
-    trie.insert("apple");
-    trie.search("apple");   // 返回 True
-    trie.search("app");     // 返回 False
-    trie.startsWith("app"); // 返回 True
-    trie.insert("app");
-    trie.search("app");     // 返回 True
+    for (String word : sortWords) {
+      if (trie.startWith(word.substring(0, word.length() - 1))) {
+        trie.insert(word);
+        if (strCompare(result, word)) {
+          result = word;
+        }
+      }
+    }
+    return result;
+  }
+
+  public boolean strCompare(String oldValue, String newVal) {
+    if (newVal.length() > oldValue.length()) {
+      return true;
+    }
+    if (newVal.length() == oldValue.length()) {
+      for (int i = 0; i < newVal.toCharArray().length; i++) {
+        if (newVal.charAt(i) == oldValue.charAt(i)) {
+          continue;
+        }
+        return newVal.charAt(i) < oldValue.charAt(i);
+      }
+    }
+    return false;
   }
 
   private static class Trie {
@@ -22,7 +47,7 @@ public class Solution0208 {
     private boolean isEnd;
 
     public Trie() {
-      children = new Trie[26];
+      this.children = new Trie[26];
       isEnd = false;
     }
 
@@ -48,7 +73,7 @@ public class Solution0208 {
       return currNode.isEnd;
     }
 
-    public boolean startsWith(String prefix) {
+    public boolean startWith(String prefix) {
       Trie currNode = this;
       for (char ch : prefix.toCharArray()) {
         if (currNode.children[ch - 'a'] == null) {
@@ -58,40 +83,5 @@ public class Solution0208 {
       }
       return true;
     }
-
-  }
-
-}
-
-class TrieNodeTemp {
-
-  private TrieNodeTemp[] links;
-
-  private final int R = 26;
-
-  private boolean isEnd;
-
-  public TrieNodeTemp() {
-    links = new TrieNodeTemp[R];
-  }
-
-  public boolean containsKey(char ch) {
-    return links[ch - 'a'] != null;
-  }
-
-  public TrieNodeTemp get(char ch) {
-    return links[ch - 'a'];
-  }
-
-  public void put(char ch, TrieNodeTemp node) {
-    links[ch - 'a'] = node;
-  }
-
-  public void setEnd() {
-    isEnd = true;
-  }
-
-  public boolean isEnd() {
-    return isEnd;
   }
 }
